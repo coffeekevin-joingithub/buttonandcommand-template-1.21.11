@@ -7,7 +7,8 @@ version = project.mod_version
 group = project.maven_group
 
 base {
-	archivesName = project.archives_base_name
+    // 設定產出的檔案名稱格式
+    archivesName = "${project.archives_base_name}-mc-${project.minecraft_version}-v"
 }
 
 repositories {
