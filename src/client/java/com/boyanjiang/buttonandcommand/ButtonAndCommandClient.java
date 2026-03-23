@@ -11,23 +11,24 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 
 public class ButtonAndCommandClient implements ClientModInitializer {
-	@Override
-	public void onInitializeClient() {
-		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
-		// 註冊快捷鍵：名稱、類型、預設按鍵、分類
-		KeyBinding openGuiKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "key.mymod.open_gui", 
-            InputUtil.Type.KEYSYM, 
-            GLFW.GLFW_KEY_G, // 預設為 G 鍵
-            KeyBinding.Category.MISC
-        ));
+    @Override
+    public void onInitializeClient() {
+        // This entrypoint is suitable for setting up client-specific logic, such as
+        // rendering.
+        // 註冊快捷鍵：名稱、類型、預設按鍵、分類
+        KeyBinding openGuiKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.mymod.open_gui",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_G, // 預設為 G 鍵
+                KeyBinding.Category.MISC));
 
         // 註冊每一刻(Tick)的監聽，檢查按鍵是否被按下
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openGuiKey.wasPressed()) {
                 // 當按鍵被按下時，開啟自定義界面
-                client.setScreen(new MyCustomScreen(Text.literal("我的自定義界面")));
+                // parent 傳入 null，因為遊戲中開啟不需要返回到另一個 Screen
+                client.setScreen(new MyCustomScreen(null, Text.literal("我的自定義界面")));
             }
         });
-	}
+    }
 }

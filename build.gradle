@@ -16,6 +16,13 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+
+	// 這個是 ModMenu 的 maven repository，裡面有 ModMenu 和它的依賴（如 libgui）。
+	maven {
+    url = 'https://maven.terraformersmc.com/releases'
+    content { includeGroup('com.terraformersmc') }
+	}  
+
 }
 
 loom {
@@ -39,6 +46,9 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// ModMenu 引入需求代碼依賴
+	modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 	
 }
 
