@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "buttonandcommand",
+	"version": "${version}",
+	"name": "ButtonAndCommand",
+	"description": "簡單使用按鈕，使用想要的指令，無須多次重打指令，只需修改一次即可",
+	"authors": [
+		"BoyanJiang"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/buttonandcommand/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.boyanjiang.buttonandcommand.ButtonAndCommand"
+		],
+		"client": [
+			"com.boyanjiang.buttonandcommand.ButtonAndCommandClient"
+		]
+	},
+	"mixins": [
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
