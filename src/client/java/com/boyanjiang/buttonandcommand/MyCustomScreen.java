@@ -84,6 +84,7 @@ public class MyCustomScreen extends Screen {
         // 如果你想畫額外的文字：
         // context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width
         // / 2, 20, 0xFFFFFF);
+        // 0xFFAA00改用0xFFFFAA00
         this.commandInput.render(context, mouseX, mouseY, delta);
         this.commandInput2.render(context, mouseX, mouseY, delta);
         context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("指令自定義面板"), this.width / 2, 20, 0xFFFFAA00);
