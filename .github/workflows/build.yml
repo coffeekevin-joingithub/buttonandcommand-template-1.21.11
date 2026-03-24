@@ -34,17 +34,20 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
+      - name: Cleanup Unwanted Jars # 在發布前刪除不需要的 jar 檔，確保 Release 乾淨
+        run: |
+          rm -f build/libs/*-sources.jar
+          rm -f build/libs/*-dev.jar
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          # 這裡會自動抓取 build/libs 下的所有 .jar 檔案，並排除 -sources.jar 和 -dev.jar
+          # 這裡會自動抓取 build/libs 下的所有 .jar 檔案
           files: |
             build/libs/*.jar
-            !build/libs/*-sources.jar
-            !build/libs/*-dev.jar
           # 自動從 tag 名稱產生標題
-          name: Release ${{ github.ref_name }}
+          name: 版本發布：${{ github.ref_name }}
           # 自動生成變更日誌 (也可以手動寫)
           generate_release_notes: true
           draft: false
