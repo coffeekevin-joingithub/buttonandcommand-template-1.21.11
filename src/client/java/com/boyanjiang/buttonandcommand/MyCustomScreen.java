@@ -65,13 +65,16 @@ public class MyCustomScreen extends Screen {
                 // 關閉介面
                 this.close();
             }
-            // 在螢幕垂直正中心-100(按鈕長度) ,上方往下60, 按鈕長200, 高20 繪製按鈕
-        }).dimensions(this.width / 2 - 100, 120, 200, 20).build());
+            // 在螢幕垂直正中心-50(按鈕長度) ,上方往下60, 按鈕長200, 高20 繪製按鈕
+            // 改成螢幕左側數過來20
+        }).dimensions(this.width / 2 - 50, 150, 100, 20).build());
 
         // 繪製關閉選單的按鈕
         // 💡 修正關閉按鈕邏輯：回到 parent 而不是直接關閉
-        this.addDrawableChild(ButtonWidget.builder(Text.literal("關閉並返回"), button -> this.close())
-                .dimensions(this.width / 2 - 100, 150, 200, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(Text.literal("關閉並返回"),
+                button -> this.close())
+                // 改成螢幕左側數過來20
+                .dimensions(this.width / 2 - 50, 170, 100, 20).build());
     }
 
     // 關鍵修正：在 1.21.11 中，不要在 render 裡呼叫 renderBackground！
@@ -88,8 +91,7 @@ public class MyCustomScreen extends Screen {
         this.commandInput.render(context, mouseX, mouseY, delta);
         this.commandInput2.render(context, mouseX, mouseY, delta);
         context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("指令自定義面板"), this.width / 2, 20, 0xFFFFAA00);
-        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("請輸入指令 (不需 /):"), this.width / 2 - 100, 45,
-                0xFFFFFFFF);
+        context.drawCenteredTextWithShadow(this.textRenderer, Text.literal("輸入指令 (不加 /):"), 60, 45, 0xFFFFFFFF);
     }
 
     @Override
