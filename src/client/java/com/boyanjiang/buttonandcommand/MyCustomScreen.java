@@ -3,7 +3,7 @@ package com.boyanjiang.buttonandcommand;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.glfw.GLFW;
+// import org.lwjgl.glfw.GLFW;
 
 import com.boyanjiang.CommandStorage;
 
@@ -14,7 +14,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 import net.minecraft.client.input.KeyInput;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.screen.ingame.StonecutterScreen.*;
+// import net.minecraft.client.gui.screen.ingame.StonecutterScreen.*;
 
 public class MyCustomScreen extends Screen {
 
