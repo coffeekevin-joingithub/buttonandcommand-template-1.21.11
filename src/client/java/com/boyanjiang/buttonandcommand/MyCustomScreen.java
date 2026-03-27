@@ -99,6 +99,9 @@ public class MyCustomScreen extends Screen {
 
     @Override
     public void close() {
+        saveAllFields(); // 先把當前輸入框的內容同步到記憶體
+        BACConfig.save(); // 儲存到 BACConfig 檔案
+
         // 💡 關鍵：如果有 parent 就回到 parent (ModMenu)，沒有就關閉 (遊戲中)
         this.client.setScreen(this.parent);
     }
@@ -146,6 +149,5 @@ public class MyCustomScreen extends Screen {
 
         return processed;
     }
-
 
 }
