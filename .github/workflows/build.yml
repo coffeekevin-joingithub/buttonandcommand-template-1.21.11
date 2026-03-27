@@ -7,23 +7,24 @@ on:
     # 當你推送到以 release-v 開頭的標籤時觸發 (例如 release-v1.0.0)
     # 打上版本標籤：git tag -a release-v1.0.0 -m "第一個正式版本"
     # 推送標籤到 GitHub：git push origin release-v1.0.0
-    # 一旦 GitHub 偵測到這個 release-v* 開頭的 Tag，它就會自動啟動虛擬機
-    # 並執行這個工作流程 (Workflow)，來構建你的 Minecraft Mod 並發布到 GitHub Release
+
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # 賦予建立 Release 的權限
+      contents: write
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 必須抓完整 commit 歷史，generate_release_notes 才能正常運作
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: "21"
-          distribution: "microsoft" # 推薦使用 Microsoft 或 Temurin
+          distribution: "microsoft"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
@@ -34,21 +35,88 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Cleanup Unwanted Jars # 在發布前刪除不需要的 jar 檔，確保 Release 乾淨
+      - name: Cleanup Unwanted Jars
         run: |
           rm -f build/libs/*-sources.jar
           rm -f build/libs/*-dev.jar
 
-      - name: Create GitHub Release
+      # -------------------------------------------------------
+      # 從 CHANGELOG.md 抓取對應版本的內容
+      # tag 格式為 release-v1.0.0，版本號為 1.0.0
+      # 腳本會尋找 ## [1.0.0] 區段，抓取到下一個 ## 之前的內容
+      # 如果找不到對應版本，輸出空字串，讓後續步驟 fallback
+      # -------------------------------------------------------
+      - name: Extract Changelog for this version
+        id: changelog
+        run: |
+          # 從 tag 名稱取出版本號，例如 release-v1.0.0 → 1.0.0
+          VERSION="${GITHUB_REF_NAME#release-v}"
+          echo "版本號: $VERSION"
+
+          # 用 Python 從 CHANGELOG.md 抓取對應區段
+          NOTES=$(python3 - <<EOF
+          import re, sys
+
+          version = "$VERSION"
+          try:
+              with open("CHANGELOG.md", "r", encoding="utf-8") as f:
+                  content = f.read()
+          except FileNotFoundError:
+              sys.exit(0)
+
+          # 比對 ## [1.0.0] 開頭的區段（允許後面接日期）
+          pattern = rf"(?m)^## \[{re.escape(version)}\].*?\n(.*?)(?=^## |\Z)"
+          match = re.search(pattern, content, re.DOTALL)
+
+          if match:
+              print(match.group(1).strip())
+          EOF
+          )
+
+          # 將結果寫入 GitHub Actions 的多行輸出變數
+          if [ -n "$NOTES" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+            {
+              echo "notes<<EOF_NOTES"
+              echo "$NOTES"
+              echo "EOF_NOTES"
+            } >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+            echo "notes=" >> $GITHUB_OUTPUT
+          fi
+
+      # -------------------------------------------------------
+      # 情況 A：CHANGELOG 有對應版本內容 → 使用手寫內容 + 附上 commit 清單
+      # -------------------------------------------------------
+      - name: Create Release (with CHANGELOG)
+        if: steps.changelog.outputs.found == 'true'
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
         with:
-          # 這裡會自動抓取 build/libs 下的所有 .jar 檔案
-          files: |
-            build/libs/*.jar
-          # 自動從 tag 名稱產生標題
-          name: 版本發布：${{ github.ref_name }}
-          # 自動生成變更日誌 (也可以手動寫)
+          files: build/libs/*.jar
+          name: "版本發布：${{ github.ref_name }}"
+          body: |
+            ## 📋 本版本更新內容
+
+            ${{ steps.changelog.outputs.notes }}
+
+            ---
+
+            ## 📝 Commit 紀錄
+          # 在手寫內容後面自動附上 commit 記錄
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+
+      # -------------------------------------------------------
+      # 情況 B：CHANGELOG 沒有對應版本 → 純自動生成 commit 紀錄
+      # -------------------------------------------------------
+      - name: Create Release (auto-generated notes)
+        if: steps.changelog.outputs.found == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/libs/*.jar
+          name: "版本發布：${{ github.ref_name }}"
           generate_release_notes: true
           draft: false
           prerelease: false
