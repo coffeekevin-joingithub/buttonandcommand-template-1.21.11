@@ -1,5 +1,5 @@
 {
-  "key.buttonandcommand.open_gui": "開啟快捷指令界面",
-  "category.buttonandcommand.general": "按鈕與指令模組",
-  "text.buttonandcommand.gui_title": "快捷指令選單"
+  "key.buttonandcommand.open_gui": "開啟 BAC 快捷指令界面",
+  "category.buttonandcommand.general": " BAC 按鈕與指令模組",
+  "text.buttonandcommand.gui_title": " BAC 快捷指令選單"
 }

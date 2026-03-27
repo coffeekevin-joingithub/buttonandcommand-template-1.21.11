@@ -19,7 +19,7 @@ public class ButtonAndCommandClient implements ClientModInitializer {
         // rendering.
         // 註冊快捷鍵：名稱、類型、預設按鍵、分類
         KeyBinding openGuiKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.mymod.open_gui",
+                "key.buttonandcommand.open_gui",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_G, // 預設為 G 鍵
                 KeyBinding.Category.MISC));
